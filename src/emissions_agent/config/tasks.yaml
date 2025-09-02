@@ -1,0 +1,119 @@
+data_ingestion_and_quality_assessment:
+  description: >
+    Load and validate emissions data from available sources only. 
+    Perform data quality assessment, identify missing values, outliers, and data integrity issues.
+    Index available knowledge base documents for retrieval.
+    
+    CRITICAL: Only work with files that actually exist. Do not reference or assume files that aren't available.
+    
+    STRATEGIC APPROACH:
+    1. Use LoadEmissionsDataTool to load scope1.csv, scope2.csv, scope3.csv (for structured data analysis)
+    2. Use LoadKnowledgeBaseTool to load ONLY available PDF documents (this tool will report which files exist)
+    3. Use CreateVectorCollectionsTool to create vector collections ONLY for loaded documents:
+       - "ghg_protocol" collection for available regulatory guidance
+       - "peer_benchmarks" collection for available industry benchmark documents
+    4. Use AnalyzeEmissionsTool for CSV data analysis (NOT vector search)
+    5. Use QueryTool/SimilaritySearchTool for finding relevant guidance from AVAILABLE documents only
+    6. Report exactly which files were loaded and which were missing
+    
+    Establish data governance and validation rules based on actually available data sources.
+  agent: data_engineer
+  expected_output: >
+    - Validated emissions datasets with quality metrics
+    - Data quality report highlighting issues and recommendations
+    - Indexed knowledge base for GHG Protocol and regulatory guidance (PDFs only)
+    - Vector collections created for document retrieval (NOT for CSV data)
+    - Data schema documentation and validation rules
+
+emissions_analysis_and_insights:
+  description: >
+    Analyze emissions inventory to identify key drivers, trends, and patterns across all scopes.
+    Perform statistical analysis to uncover correlations and anomalies.
+    Identify emissions hotspots and reduction opportunities.
+    Generate insights on emissions intensity, efficiency metrics, and benchmarking data.
+  agent: emissions_analyst
+  input_tasks: [data_ingestion_and_quality_assessment]
+  expected_output: >
+    - Comprehensive emissions analysis report with key findings
+    - Identification of top emissions drivers and reduction opportunities
+    - Statistical analysis of emissions trends and patterns
+    - Emissions intensity metrics and efficiency analysis
+    - Quality assessment of emissions inventory with improvement recommendations
+
+sustainability_guidance_and_education:
+  description: >
+    Provide expert guidance on GHG Protocol standards and compliance requirements.
+    Answer sustainability education questions and explain complex emissions concepts.
+    Offer strategic advice on emissions management and reduction strategies.
+    Validate emissions calculations against industry best practices and regulatory requirements.
+  agent: sustainability_advisor
+  input_tasks: [data_ingestion_and_quality_assessment]
+  expected_output: >
+    - GHG Protocol compliance assessment and recommendations
+    - Educational content on emissions accounting and sustainability
+    - Strategic guidance on emissions reduction and management
+    - Regulatory compliance checklist and action items
+    - Best practices recommendations for emissions inventory management
+
+natural_language_query_processing:
+  description: >
+    Process the specific business questions provided in the inputs: {questions}
+    Provide detailed, contextual answers using the emissions data and knowledge base.
+    Generate visualizations and charts to support data-driven insights.
+    Address each question comprehensively with supporting analysis.
+  agent: insights_reporter
+  input_tasks: [emissions_analysis_and_insights, sustainability_guidance_and_education]
+  expected_output: >
+    - Detailed answers to each specific business question from the input
+    - Natural language responses with supporting data and GHG Protocol references
+    - Interactive visualizations and charts for key insights
+    - Data-driven narratives that drive sustainability action
+
+comprehensive_emissions_report:
+  description: >
+    Compile a comprehensive emissions report integrating all analyses and insights.
+    Create executive summaries, technical documentation, and actionable recommendations.
+    Generate visual reports with charts, graphs, and infographics.
+    Produce both technical and business-friendly versions of the report.
+  agent: insights_reporter
+  input_tasks: [emissions_analysis_and_insights, sustainability_guidance_and_education, natural_language_query_processing]
+  expected_output: >
+    - Executive summary with key findings and recommendations
+    - Technical emissions report with detailed analysis
+    - Visual dashboard with interactive charts and graphs
+    - Action plan for emissions reduction and management
+    - Stakeholder communication materials
+    - Quality assessment report with improvement roadmap
+
+single_question_analysis:
+  description: >
+    Answer a single specific question about emissions data using the loaded knowledge base and emissions data.
+    Focus on providing a direct, comprehensive answer to the question: {question}
+    
+    CRITICAL: Once you have completed your analysis, you MUST save the results as a report using the save_question_report tool 
+    with the following parameters:
+    - question: {question}
+    - answer: your complete analysis and answer
+    - question_number: {question_number}
+    
+    STRATEGIC APPROACH:
+    1. First, load emissions data using LoadEmissionsDataTool
+    2. Load knowledge base using LoadKnowledgeBaseTool (this will tell you exactly which PDFs are available)
+    3. Use only the data sources that are actually loaded and available - DO NOT reference files that don't exist
+    4. Use QueryTool and SimilaritySearchTool to find relevant regulatory guidance from available documents
+    5. Use RetrieveTopKWithSpansTool to get exact citations for compliance references
+    6. Cross-reference your emissions data findings with regulatory requirements from available sources only
+    7. Provide evidence-based insights with proper citations
+    8. Save your complete answer using save_question_report tool with question_number: {question_number}
+    
+    Include relevant calculations, charts, or visualizations if helpful for the specific question.
+    Base ALL analysis on actually available data files only.
+  agent: emissions_analyst
+  expected_output: >
+    - Direct answer to the specific question asked
+    - Supporting data analysis from CSV files with specific numbers
+    - Relevant references from available documents only (no hallucinations about unavailable files)
+    - Cross-referenced analysis between actual data and available regulatory standards
+    - Actionable insights or recommendations related to the question
+    - Charts or visualizations if they enhance the answer
+    - Report saved to outputs/question_{question_number}_report.md using save_question_report tool

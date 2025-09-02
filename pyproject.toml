@@ -1,0 +1,32 @@
+[project]
+name = "emissions_agent"
+version = "0.1.0"
+description = "emissions_agent using crewAI"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "crewai[tools]>=0.175.0,<1.0.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "matplotlib>=3.7.0",
+    "PyMuPDF>=1.23.0",
+    "PyPDF2>=3.0.0",
+    "chromadb>=0.4.0",
+    "sentence-transformers>=2.2.0",
+    "python-dotenv>=1.0.0"
+]
+
+[project.scripts]
+emissions_agent = "emissions_agent.main:main"
+run_crew = "emissions_agent.main:run"
+run_questions = "emissions_agent.main:run_questions_individually"
+train = "emissions_agent.main:train"
+replay = "emissions_agent.main:replay"
+test = "emissions_agent.main:test"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.crewai]
+type = "crew"
